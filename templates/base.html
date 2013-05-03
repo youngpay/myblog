@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ handler.settings['blog_title'] }}</title>
+    <link rel="stylesheet" type="text/css" href="http://bootswatch.com/slate/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/pygments.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/darkstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    {% block head %}{% end %}
+</head>
+<body>
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand">YoungPay
+            </a>
+            <div class="nav-collapse">
+                <ul class="nav">
+                    <li class="active"><a href="/">首页</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+    {% block body %}{% end %}
+        </div>
+    </div>
+</div>
+<footer>
+    <p>
+        By <a href="#" title="创建于 1989年11月15日">YoungPay</a>
+    </p>
+    <p>
+        <img src="https://developers.google.com/appengine/images/appengine-silver-120x30.gif" 
+alt="Powered by Google App Engine" />
+    </p>
+</footer>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+<script src='http://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js'></script>
+<script src="/static/js/main.js"></script>
+{% block js %}{% end %}
+</body>
+</html>
