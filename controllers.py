@@ -1,6 +1,7 @@
 #coding: utf-8
 import tornado.web
 from models import db,Entry
+from google.appengine.ext import db
 
 class BaseHandler(tornado.web.RequestHandler):
     pass
