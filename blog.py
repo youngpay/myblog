@@ -10,4 +10,5 @@ settings = {
 }
 application = tornado.wsgi.WSGIApplication([
     (r"/", controllers.HomeHandler),
+    (r"/post/(.+)", controllers.PostHandler),
 ], **settings)
