@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ handler.settings['blog_title'] }}</title>
+    <title>YoungPay's Admin</title>
     <link rel="stylesheet" type="text/css" href="/static/css/slate/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/static/css/pygments.css">
     <link rel="stylesheet" type="text/css" href="/static/css/darkstrap.css">
@@ -13,17 +13,20 @@
   <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
-            <a class="brand">YoungPay
+            <a class="brand">YoungPay's Admin
             </a>
             <div class="nav-collapse">
                 <ul class="nav">
-                    <li class="active"><a href="/">首页</a></li>
+                    
                 </ul>
                 <ul class="nav pull-right">
-                    {% if current_user %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            {{ current_user }} <b class="caret"></b>
+                          {% if current_user is None %}
+                          admin
+                          {% else %}
+                          {{current_user}}
+                          {% end %} <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
                             <li>
@@ -31,11 +34,6 @@
                             </li>
                         </ul>
                     </li>
-                    {% else %}
-                    <li>
-                        <a href="#" onclick="login()">登录</a>
-                    </li>
-                    {% end %}
                 </ul>
             </div>
         </div>
@@ -48,15 +46,6 @@
         </div>
     </div>
 </div>
-<footer>
-    <p>
-        By <a class="mname" href="#" title="创建于 1989年11月15日">YoungPay</a>
-    </p>
-    <p>
-        <img src="https://developers.google.com/appengine/images/appengine-silver-120x30.gif" 
-alt="Powered by Google App Engine" />
-    </p>
-</footer>
 <script src="/static/js/jquery-1.8.3.min.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>
 <script src="/static/js/main.js"></script>

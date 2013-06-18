@@ -2,6 +2,7 @@ import os.path
 import tornado.wsgi
 
 import controllers
+from admin import admin
 
 settings = {
     "blog_title": u"YoungPay's Blog",
@@ -10,4 +11,5 @@ settings = {
 }
 application = tornado.wsgi.WSGIApplication([
     (r"/", controllers.HomeHandler),
-], **settings)
+    (r"/post/(.+)", controllers.PostHandler),
+] + admin.routes, **settings)
