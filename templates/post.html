@@ -2,9 +2,9 @@
 
 {% block body %}
 <h2>{{post.title}}
-<small>发布于 {{post.published.strftime('%Y-%m-%d %H:%M:%S')}}</small>
+<small>发布于 {{post.published}}</small>
 </h2>
-{% raw post.html %}
 <hr />
-
+{{post.html}}
+<hr />
 {% end %}

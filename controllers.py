@@ -5,7 +5,8 @@ from google.appengine.api import users
 
 
 class BaseHandler(tornado.web.RequestHandler):
-    pass
+    def get_error_html(self, status_code, exception=None, **kwargs):
+        self.render("error.html", status_code=status_code, ex=exception)
 
 class HomeHandler(BaseHandler):
     def get(self):
@@ -13,11 +14,6 @@ class HomeHandler(BaseHandler):
         self.render("home.html", entities=entities)
 
 class PostHandler(BaseHandler):
-    def get(self, id):
-        try:
-            post = Entry.get(id)
-            self.render("post.html", post=post)
-        except Exception:
-            raise tornado.web.HTTPError(404)
-        
-    
+    def get(self, key):
+        post = Entry.get(key)
+        self.render("post.html", post=post)

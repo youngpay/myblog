@@ -1,6 +1,5 @@
 from google.appengine.ext import db
 
-db = db
 class Entry(db.Model):
     """A single blog entry."""
     author = db.UserProperty()

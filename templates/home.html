@@ -2,7 +2,7 @@
 
 {% block body %}
 {% for entry in entities %}
-<div class="post" id="{{ entry.key() }}">
+<div class="post">
     <div class="page-header">
         <h3 class="title" title="发表于 {{ entry.published }}" data-placement="right">
             <a href="/post/{{ entry.key() }}">{{ entry.title }}</a></h3>
