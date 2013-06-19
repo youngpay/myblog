@@ -30,5 +30,6 @@ nosetests.xml
 # Translations
 *.mo
 
-*.komodoproject
-.komodoproject
+# Eclipse
+.project
+.pydevproject
