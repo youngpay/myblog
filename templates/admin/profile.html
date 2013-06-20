@@ -1,0 +1,20 @@
+{% extends "base.html" %} {% block body%}
+<div class="span6" style="margin-top: 50px">
+	<fieldset>
+		<legend>账户信息</legend>
+		<p>
+			<label>昵称</label> <strong>{{ user.nickname() }}</strong>
+		</p>
+		<p>
+			<label>Email</label> <strong>{{ user.email() }}</strong>
+		</p>
+
+		{% if user.federated_provider() %}
+		<p>
+			<label>OpenID 提供方</label> <strong>{{
+				user.federated_provider() }}</strong>
+		</p>
+		{% end %}
+	</fieldset>
+</div>
+{% end %}

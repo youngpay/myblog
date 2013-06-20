@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>YoungPay's Admin</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/slate/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/static/css/pygments.css">
-    <link rel="stylesheet" type="text/css" href="/static/css/darkstrap.css">
+    {% module ThemeCss(handler.get_cookie('ypbtheme', default="slate"))%}
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     {% block head %}{% end %}
 </head>
@@ -13,11 +11,13 @@
   <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
-            <a class="brand">YoungPay's Admin
+            <a class="brand" href="/admin/">YoungPay's Admin
             </a>
             <div class="nav-collapse">
                 <ul class="nav">
-                    
+                    <li {% if navIndex == 0 %}class="active"{% end %}>
+                    	<a href="/admin/">控制面板</a>
+                    </li>
                 </ul>
                 <ul class="nav pull-right">
                     <li class="dropdown">
@@ -30,7 +30,10 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="#">退出</a>
+                                <a href="/admin/profile">账户信息</a>
+                            </li>
+                            <li>
+                                <a href="/admin/logout">退出</a>
                             </li>
                         </ul>
                     </li>
@@ -41,7 +44,11 @@
 </div>
 <div class="container-fluid">
     <div class="row-fluid">
-        <div class="span12">
+        <div class="span2">
+    {% include "layout-left.html" %}
+        </div>
+        <div class="span10">
+    {% include "layout-top.html" %}
     {% block body %}{% end %}
         </div>
     </div>

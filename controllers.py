@@ -17,3 +17,10 @@ class PostHandler(BaseHandler):
     def get(self, key):
         post = Entry.get(key)
         self.render("post.html", post=post)
+        
+class ChangeThemeHandler(BaseHandler):
+    def get(self, theme):
+        if theme not in ["default","cerulean","readable","slate",]:
+            theme = "slate"
+        self.set_cookie("ypbtheme", theme)
+        self.redirect(self.request.headers.get("referer", default="/"))
