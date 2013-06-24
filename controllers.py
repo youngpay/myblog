@@ -1,11 +1,11 @@
 #coding: utf-8
 import tornado.web
-from models import db, Entry
-from google.appengine.api import users
+from models import db, Entry, User
+from tornado.escape import json_encode
 
 class BaseHandler(tornado.web.RequestHandler):
-    def get_error_html(self, status_code, exception=None, **kwargs):
-        return self.render_string("error.html", status_code=status_code, ex=exception)
+    def get_error_html(self, status_code, exception="", **kwargs):
+        return self.render_string("error.html", status_code=status_code, ex=exception, themes=self.get_all_themes(), currentTheme=self.get_theme_current())
     
     def view(self, template_name, **kwargs):
         """自定义输出的方法,替代render,加入几个内置参数
@@ -14,10 +14,16 @@ class BaseHandler(tornado.web.RequestHandler):
         kwargs["currentTheme"] = self.get_theme_current()
         self.render(template_name, **kwargs)
         
+    def dispatch(self, msg="正在加载", to=None, toUrl="/", seconds=3):
+        self.view("dispatch.html", msg=msg,to=to,toUrl=toUrl,seconds=seconds)
+    
+    def json(self, value):
+        self.set_header("Content-Type", "application/json")
+        self.finish(json_encode(value))
+        
     def get_current_user(self):
-        """获取当前用户,使用的Google用户API
-        """
-        return users.get_current_user()
+        """获取当前用户"""
+        return self.get_secure_cookie(self.settings["auth_cookie_name"])
     
     def get_all_themes(self):
         return [
@@ -66,9 +72,14 @@ class ChangeThemeHandler(BaseHandler):
         theme = self.get_theme_by_name_or_default(theme)
         self.set_cookie("ypbtheme", theme.name)
         self.redirect(self.request.headers.get("referer", default="/"))
+        
+class DispatchHandler(BaseHandler):
+    def get(self):
+        self.dispatch()
 
 routes = [
     (r"/", HomeHandler),
     (r"/post/(.+)", PostHandler),
     (r"/changetheme/(.+)", ChangeThemeHandler),
+    (r"/dispatch", DispatchHandler),
 ]

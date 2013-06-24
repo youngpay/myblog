@@ -192,7 +192,9 @@ textarea {
   color: white;
   border-color: #111111;
 }
-
+.uneditable-input, input[disabled], select[disabled], textarea[disabled], input[readonly], select[readonly], textarea[readonly]{
+	color:#555;
+}
 /* line 160, ../sass/darkstrap.scss */
 .search-query {
   -webkit-box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0) 0 1px 7px 0px inset;

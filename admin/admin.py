@@ -1,7 +1,8 @@
 #coding:utf-8
 import controllers
-from models import Entry, db
-from google.appengine.api import users
+from models import Entry, db, User
+from tornado.web import authenticated
+import datetime
 
 class AdminBaseHandler(controllers.BaseHandler):
     def view(self, template_name, **kwargs):
@@ -12,30 +13,52 @@ class AdminBaseHandler(controllers.BaseHandler):
         super(AdminBaseHandler, self).view(template_name, **kwargs)
 
 class HomeHandler(AdminBaseHandler):
+    @authenticated
     def get(self):
-        user = users.get_current_user()
-        if user is None:
-            self.redirect(users.create_login_url("/admin/"))
-        else:
-            self.view("admin/home.html")
+        self.view("admin/home.html")
             
-class LogoutHandler(AdminBaseHandler):
+class LoginHandler(AdminBaseHandler):
     def get(self):
-        self.redirect(users.create_logout_url("/"))
+        self.view("admin/login.html", error=None, email=None)
+            
+    def post(self):
+        email = self.get_argument("email", None)
+        password = self.get_argument("password", None)
+        user = User.gql("WHERE email = :1 AND password = :2", email, password).get()
+        if user:
+            self.set_secure_cookie("ypbauth", email)
+            self.redirect("/admin")
+        else:
+            self.view("admin/login.html", error=u"用户名或密码错误", email=email)
+        
+class LogoutHandler(AdminBaseHandler):
+    @authenticated
+    def get(self):
+        self.clear_cookie(self.settings["auth_cookie_name"])
+        self.redirect("/")
         
 class ProfileHandler(AdminBaseHandler):
+    @authenticated
     def get(self):
-        self.view("admin/profile.html", user=users.get_current_user(),navIndex=1, menuIndex=4)
+        email = self.get_current_user()
+        user = User.gql("WHERE email = :1", email).get()
+        if user is None:
+            self.send_error(404)
+        else:
+            self.view("admin/profile.html", user=user,navIndex=1, menuIndex=4)
         
 class ArticleHandler(AdminBaseHandler):
+    @authenticated
     def get(self):
         entities = db.Query(Entry).order("-published").fetch(limit=10)
         self.view("admin/article.html", menuIndex=1, entities=entities)
         
 class ArticleNewHandler(AdminBaseHandler):
+    @authenticated
     def get(self):
         self.view("admin/article-new.html", menuIndex=1)
         
+    @authenticated
     def post(self):
         title = self.get_argument("title", default=None)
         if title is None or len(title) == 0:
@@ -44,7 +67,7 @@ class ArticleNewHandler(AdminBaseHandler):
         
         source = self.get_argument("cleanSource", default=None)
         html = self.get_argument("content", default=None)
-        entry = Entry(author=users.get_current_user(), slug=source.replace("\r\n", " ").replace("\t", "  ")[0:200], title=title, html=html, body_source=source)
+        entry = Entry(author=self.get_current_user(), slug=source.replace("\r\n", " ").replace("\t", "  ")[0:200], title=title, html=html, body_source=source)
         try:
             entry.put()
             self.redirect("/admin/article")
@@ -52,24 +75,57 @@ class ArticleNewHandler(AdminBaseHandler):
             self.view("admin/article-new.html", menuIndex=1, error=u"创建失败")
         
 class ArticleEditHandler(AdminBaseHandler):
-    def get(self):
+    @authenticated
+    def get(self, key):
+        try:
+            entry = Entry.get(key)
+            self.view("admin/article-edit.html", key=key,entry=entry, menuIndex=1)
+        except:
+            self.send_error(500, exception="没有找到此文章")
+            
+    def post(self, key):
+        entry = Entry.get(key)
+        
+        title = self.get_argument("title", default=None)
+        if title is None or len(title) == 0:
+            self.view("admin/article-edit.html", menuIndex=1, error=u"请输入标题")
+            return
+        source = self.get_argument("cleanSource", default="没有内容")
+        html = self.get_argument("content", default="<h4>没有内容</h4>")
+        slug = self.get_argument("slug", default="没有内容")
+
+        entry.title = title
+        entry.body_source = source
+        entry.html = html
+        entry.slug = slug
+        entry.updated = datetime.datetime.now()
+        entry.put()
         self.redirect("/admin/article")
         
 class ArticleDeleteHandler(AdminBaseHandler):
-    def get(self):
-        self.redirect("/admin/article")
+    @authenticated
+    def get(self, key):
+        try:
+            entry = Entry.get(key)
+            entry.delete()
+            self.json({"success":1})
+        except:
+            self.json({"success":0, "error": "参数错误"})
     
 class TagHandler(AdminBaseHandler):
+    @authenticated
     def get(self):
         self.view("admin/tag.html", menuIndex=2)
         
 class CatalogHandler(AdminBaseHandler):
+    @authenticated
     def get(self):
         self.view("admin/catalog.html", menuIndex=3)
         
 routes = [
     (r"/admin[/]*", HomeHandler),
     (r"/admin/profile", ProfileHandler),
+    (r"/admin/login", LoginHandler),
     (r"/admin/logout", LogoutHandler),
     (r"/admin/article", ArticleHandler),
     (r"/admin/tag", TagHandler),

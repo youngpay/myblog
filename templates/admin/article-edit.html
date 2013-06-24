@@ -1,0 +1,52 @@
+{% extends "base.html" %} {% block body%}
+<ul class="nav nav-tabs">
+  <li><a href="/admin/article">管理</a></li>
+  <li><a href="/admin/article/new">创建</a></li>
+  <li class="active"><a href="#">编辑</a></li>
+</ul>
+<form id="contentform" action="/admin/article/edit/{{key}}" method="post" onsubmit="return newarticle()">
+{% raw xsrf_form_html() %}
+<input type="hidden" name="cleanSource" value="{{entry.body_source}}" />
+<fieldset>
+<legend>新文章</legend>
+<p>标题</p>
+<p><input type="text" name="title" class="input-xxlarge" placeholder="标题" value="{{entry.title}}"/></p>
+<p>发表时间</p>
+<p><input type="text" name="pushlished" class="input" disabled="disabled" value="{{entry.published.strftime("%Y-%m-%d %H:%M:%S")}}"/></p>
+<p>
+<p>内容</p>
+<p><textarea id="editor" name="content" class="span12" style="height:400px;">{% raw entry.html%}</textarea></p>
+<p>
+<p>摘要</p>
+<p><textarea name="slug" class="span12" style="height:100px;">{{ entry.slug }}</textarea></p>
+<p>
+<input type="submit" value="提交" class="btn"></p>
+</fieldset>
+</form>
+{% end %}
+{% block js %}
+
+<script src="/static/js/kindeditor/kindeditor.js"></script>
+<script src="/static/js/kindeditor/lang/zh_CN.js"></script>
+<script>
+function newarticle(){
+	var txt = editor.text();
+	contentform.cleanSource.value = txt;
+	return true;
+}
+KindEditor.ready(function(K) {
+    window.editor = K.create('#editor',{
+    	items:[
+			'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'code', 'cut', 'copy', 'paste',
+			'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+			'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+			'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+			'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+			'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image',
+			'insertfile', 'table', 'hr', 'emoticons', 'baidumap', 'pagebreak',
+			'anchor', 'link', 'unlink'
+    	]
+    });
+});
+</script>
+{% end %}

@@ -1,14 +1,53 @@
-{% extends "base.html" %}
-
-{% block body%}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>YoungPay's Admin</title> 
+{% module ThemeCss(handler.get_cookie('ypbtheme', default="slate"))%}
+<link rel="stylesheet" type="text/css" href="/static/css/style.css">
+</head>
+<body data-offset="80">
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="brand" href="/admin/">YoungPay's Admin </a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li {% if navIndex == 0 %}class="active"{% end %}><a
+							>用户登录</a></li>
+					</ul>
+					<ul class="nav pull-right">
+						<li class="dropdown">{% include "../module/changeTheme.html" %}</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="main">
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span12">
 <div class="span6 offset3" style="margin-top: 50px">
+{% if handler.get_argument("next", None) %}
+    <div class="alert alert-block">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <h4>授权失败</h4>
+  <p>请先登录</p>
+</div>
+{% end %}
+{% if error %}
+<div class="alert alert-error">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  {{ error }}
+</div>
+{% end %}
     <form class="form-horizontal" method="post">
         {% raw xsrf_form_html() %} 
-  <div class="control-group">
+  <div class="control-group{% if error %} error{% end %}">
     <div class="controls">
-      <input type="text" id="username" name="username" placeholder="用户名">
+      <input type="text" id="email" name="email" placeholder="邮箱" value="{{email}}">
     </div>
-  </div> <div class="control-group"> <div
+  </div> <div class="control-group{% if error %} error{% end %}"> <div
     class="controls">
       <input type="password" id="password" name="password" placeholder="密码">
     </div>
@@ -19,4 +58,13 @@
       </label> <button type="submit" class="btn btn-primary">登录</button>
     </div>
   </div>
-</form> </div> {% end %}
+</form> </div>
+                                </div>
+			</div>
+		</div>
+	</div>
+	<script src="/static/js/jquery-1.8.3.min.js"></script>
+	<script src="/static/js/bootstrap.min.js"></script>
+	<script src="/static/js/main.js"></script>
+</body>
+</html>

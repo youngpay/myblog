@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 {% block body %}
-<h2>Error {{status_code}}</h2>
+<h2>
+{% if status_code == 404 %}
+您查找的资源不存在
+{% elif status_code == 403 %}
+您没有权限访问此资源
+{% elif status_code == 500 or status_code == 503 %}
+服务器发生错误
+{% else %}
+错误:{{status_code}}
+{% end %}
+</h2>
 <hr />
 <h4>{{ex}}</h4>
 {% end %}
