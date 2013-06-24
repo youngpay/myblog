@@ -10,11 +10,3 @@ class Entry(db.Model):
     published = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
     
-class User(db.Model):
-    """User Model"""
-    email = db.StringProperty(required=True)
-    password = db.StringProperty(required=True)
-    displayname = db.StringProperty()
-    lastLoginDate = db.DateTimeProperty(auto_now_add=True)
-    lastLoginIp = db.StringProperty()
-    

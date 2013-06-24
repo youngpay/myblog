@@ -1,0 +1,39 @@
+{% extends "base.html" %} {% block body%}
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#">管理</a></li>
+  <li><a href="/admin/article/new">创建</a></li>
+</ul>
+
+<table class="table table-bordered table-hover">
+	<tr>
+		<th style="width:300px">标题
+		</th>
+		<th style="width:100px">发表时间
+		</th>
+		<th style="width:100px">修改时间
+		</th>
+		<th style="width:100px">操作
+		</th>
+	</tr>
+	{% if entities %}
+		{% for entry in entities %}
+		<tr>
+			<td>{{entry.title}}
+			</td>
+			<td>{{entry.published.strftime("%Y-%m-%d %H:%M:%S")}}
+			</td>
+			<td>{{entry.updated.strftime("%Y-%m-%d %H:%M:%S")}}
+			</td>
+			<td>
+			<a href="/admin/article/edit/{{entry.key()}}" class="btn btn-mini">编辑</a>&nbsp;
+			<a href="/admin/article/delete/{{entry.key()}}" class="btn btn-danger btn-mini">删除</a>
+			</td>
+		</tr>
+		{% end %}
+	{% else %}
+	<tr>
+		<td colspan="4" style="text-align:center">无记录</td>
+	</tr>
+	{% end %}
+</table>
+{% end %}

@@ -1,12 +1,6 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Error {{status_code}}</title>
-</head>
-<body>
-    <h2>Error {{status_code}}</h2>
-    <hr />
-    <h4>{{ex}}</h4>
-</body>
-</html>
+{% extends "base.html" %}
+{% block body %}
+<h2>Error {{status_code}}</h2>
+<hr />
+<h4>{{ex}}</h4>
+{% end %}

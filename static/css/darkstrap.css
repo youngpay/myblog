@@ -97,6 +97,9 @@ h6 {
   text-shadow: 0 1px 0 #000;
 }
 
+.nav-list .nav-header {
+	color:#ccc;
+}
 /* line 98, ../sass/darkstrap.scss */
 .nav-list > li > a:hover {
   background-color: #161616;
