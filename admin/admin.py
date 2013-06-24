@@ -16,20 +16,35 @@ class HomeHandler(AdminBaseHandler):
     @authenticated
     def get(self):
         self.view("admin/home.html")
+
+class RegisterHandler(AdminBaseHandler):
+    def get(self):
+        self.view("admin/register.html", error="", email="")
+
+    def post(self):
+        canRegister = db.Query(User).count() == 0
+        if canRegister is False:
+            return self.view("admin/register.html", error=u"目前只支持单用户,无法再注册", email="")
+
+        email = self.get_argument("email", None)
+        password = self.get_argument("password", None)
+        User(email=email, password=password, nickname=email).put()
+        self.dispatch(msg=u"注册成功", to="登录页", toUrl="/admin/login")
             
 class LoginHandler(AdminBaseHandler):
     def get(self):
-        self.view("admin/login.html", error=None, email=None)
+        canRegister = db.Query(User).count() == 0
+        self.view("admin/login.html", error=None, email="", canRegister=canRegister)
             
     def post(self):
         email = self.get_argument("email", None)
         password = self.get_argument("password", None)
         user = User.gql("WHERE email = :1 AND password = :2", email, password).get()
         if user:
-            self.set_secure_cookie("ypbauth", email)
+            self.set_secure_cookie("ypbauth", email, httponly=True)
             self.redirect("/admin")
         else:
-            self.view("admin/login.html", error=u"用户名或密码错误", email=email)
+            self.view("admin/login.html", error=u"用户名或密码错误", email=email, canRegister=True)
         
 class LogoutHandler(AdminBaseHandler):
     @authenticated
@@ -67,7 +82,11 @@ class ArticleNewHandler(AdminBaseHandler):
         
         source = self.get_argument("cleanSource", default=None)
         html = self.get_argument("content", default=None)
-        entry = Entry(author=self.get_current_user(), slug=source.replace("\r\n", " ").replace("\t", "  ")[0:200], title=title, html=html, body_source=source)
+        entry = Entry(author=self.get_current_user(), 
+            slug=source.replace("\r\n", " ").replace("\t", "  ")[0:200], 
+            title=title, 
+            html=html, 
+            body_source=source)
         try:
             entry.put()
             self.redirect("/admin/article")
@@ -124,6 +143,7 @@ class CatalogHandler(AdminBaseHandler):
         
 routes = [
     (r"/admin[/]*", HomeHandler),
+    (r"/admin/register", RegisterHandler),
     (r"/admin/profile", ProfileHandler),
     (r"/admin/login", LoginHandler),
     (r"/admin/logout", LogoutHandler),

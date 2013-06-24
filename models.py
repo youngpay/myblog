@@ -12,10 +12,6 @@ class Entry(db.Model):
     
 class User(db.Model):
     """User Model"""
-    def __init__(self, email, password):
-        self.email = email
-        self.password = password
-    
     email = db.StringProperty(required=True)
     password = db.StringProperty(required=True)
     nickname = db.StringProperty(required=True)
