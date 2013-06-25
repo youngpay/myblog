@@ -5,7 +5,7 @@ class User(db.Model):
     email = db.StringProperty(required=True)
     password = db.StringProperty(required=True)
     nickname = db.StringProperty(required=True)
-    lastLoginTime = db.DateTimeProperty(auto_now=True)
+    lastLoginTime = db.DateTimeProperty()
     lastLoginIp = db.StringProperty()
 
 class Entry(db.Model):
@@ -15,5 +15,5 @@ class Entry(db.Model):
     slug = db.StringProperty(required=True)
     body_source = db.TextProperty(required=True)
     html = db.TextProperty(required=True)
-    published = db.DateTimeProperty(auto_now_add=True)
-    updated = db.DateTimeProperty(auto_now=True)
+    published = db.DateTimeProperty()
+    updated = db.DateTimeProperty()

@@ -2,7 +2,7 @@
 import controllers
 from models import Entry, db, User
 from tornado.web import authenticated
-import datetime
+import datetime,tz
 
 class AdminBaseHandler(controllers.BaseHandler):
     def view(self, template_name, **kwargs):
@@ -33,18 +33,26 @@ class RegisterHandler(AdminBaseHandler):
             
 class LoginHandler(AdminBaseHandler):
     def get(self):
+        email = self.get_cookie("remember", "")
         canRegister = db.Query(User).count() == 0
-        self.view("admin/login.html", error=None, email="", canRegister=canRegister)
+        self.view("admin/login.html", error=None, email=email, canRegister=canRegister)
             
     def post(self):
         email = self.get_argument("email", None)
         password = self.get_argument("password", None)
+        remember = self.get_argument("remember", None)
         user = User.gql("WHERE email = :1 AND password = :2", email, password).get()
         if user:
-            user.lastLoginTime = datetime.datetime.now()
+            date = datetime.datetime.now() + datetime.timedelta(hours=8)
+            user.lastLoginTime = date
             user.lastLoginIp = self.request.remote_ip
             user.put()
             self.set_secure_cookie(self.settings["auth_cookie_name"], email, httponly=True)
+
+            if remember:
+                self.set_cookie("remember", email)
+            else:
+                self.clear_cookie("remember")
             self.redirect("/admin")
         else:
             self.view("admin/login.html", error=u"用户名或密码错误", email=email, canRegister=True)
@@ -100,13 +108,21 @@ class ArticleNewHandler(AdminBaseHandler):
         email = self.get_current_user()
         user = User.gql("WHERE email = :1", email).get()
 
-        source = self.get_argument("cleanSource", default=None)
-        html = self.get_argument("content", default=None)
+        source = self.get_argument("cleanSource", default=" ")
+        html = self.get_argument("content", default=" ")
+        slug = " "
+        if source != " ":
+            slug = source.replace("\r\n", " ").replace("\t", "  ")[0:200]
+
+        date = datetime.datetime.now() + datetime.timedelta(hours=8)
+
         entry = Entry(author=user.key(),
-            slug=source.replace("\r\n", " ").replace("\t", "  ")[0:200], 
+            slug=slug, 
             title=title, 
             html=html, 
-            body_source=source)
+            body_source=source,
+            published=date,
+            updated=date)
         try:
             entry.put()
             self.dispatch(msg=u"创建成功", to=u"文章列表页", toUrl="/admin/article", seconds=2)
@@ -129,17 +145,18 @@ class ArticleEditHandler(AdminBaseHandler):
         if title is None or len(title) == 0:
             self.view("admin/article-edit.html", menuIndex=1, error=u"请输入标题")
             return
-        source = self.get_argument("cleanSource", default="没有内容")
-        html = self.get_argument("content", default="<h4>没有内容</h4>")
-        slug = self.get_argument("slug", default="没有内容")
+        source = self.get_argument("cleanSource", default=" ")
+        html = self.get_argument("content", default=" ")
+        slug = self.get_argument("slug", default=" ")
 
+        date = datetime.datetime.now() + datetime.timedelta(hours=8)
         entry.title = title
         entry.body_source = source
         entry.html = html
         entry.slug = slug
-        entry.updated = datetime.datetime.now()
+        entry.updated = date
         entry.put()
-        self.redirect("/admin/article")
+        self.dispatch(msg=u"修改成功", to=u"文章列表页", toUrl="/admin/article", seconds=2)
         
 class ArticleDeleteHandler(AdminBaseHandler):
     @authenticated

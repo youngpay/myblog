@@ -2,6 +2,7 @@
 import tornado.web
 from models import db, Entry, User
 from tornado.escape import json_encode
+import tornado.locale
 
 class BaseHandler(tornado.web.RequestHandler):
     def get_error_html(self, status_code, exception="", **kwargs):
@@ -48,6 +49,9 @@ class BaseHandler(tornado.web.RequestHandler):
     def get_theme_current(self):
         themeFromCookie = self.get_cookie("ypbtheme", default=None)
         return self.get_theme_by_name_or_default(themeFromCookie)
+
+    def get_user_locale(self):
+        return tornado.locale.get("zh_CN")
     
 class ThemeInfo():
     def __init__(self, name, display):
@@ -78,7 +82,8 @@ class DispatchHandler(BaseHandler):
         msg = self.get_argument("msg", None)
         to = self.get_argument("to", None)
         toUrl = self.get_argument("toUrl", None)
-        self.dispatch(msg=msg, to=to, toUrl=toUrl)
+        seconds = self.get_argument("seconds", None)
+        self.dispatch(msg=msg, to=to, toUrl=toUrl, seconds=seconds)
 
 routes = [
     (r"/", HomeHandler),

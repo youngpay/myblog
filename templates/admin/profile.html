@@ -19,6 +19,12 @@
             <label>昵称</label> <input type="text" name="nickname" value="{{ user.nickname }}" />
         </p>
         <p>
+            <label>最后登录时间</label> <input type="text" readonly value="{{ user.lastLoginTime.strftime("%Y-%m-%d %H:%M:%S") }}" />
+        </p>
+        <p>
+            <label>最后登录IP</label> <input type="text" readonly value="{{ user.lastLoginIp }}" />
+        </p>
+        <p>
             <input type="submit" value="保存" class="btn btn-primary">
         </p>
     </fieldset>   

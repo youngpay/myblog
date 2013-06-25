@@ -68,7 +68,7 @@
 			if (data.success == 0) {
 				alert(data.error);
 			}else{
-				location.href='/dispatch?msg=' + encodeURIComponent('删除成功') + '&to=' + encodeURIComponent('文章列表') + '&toUrl=' + encodeURIComponent('/admin/article');
+				location.href='/dispatch?msg=' + encodeURIComponent('删除成功') + '&to=' + encodeURIComponent('文章列表') + '&toUrl=' + encodeURIComponent('/admin/article') + '&seconds=1';
 			}
 		});
 	}

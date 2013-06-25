@@ -54,7 +54,7 @@
   </div> <div class="control-group">
     <div class="controls">
       <label class="checkbox">
-        <input type="checkbox"> 记住用户名
+        <input type="checkbox" name="remember" {% if len(email) > 0 %}checked{% end %}> 记住用户名
       </label> <button type="submit" class="btn btn-primary">登录</button>&nbsp;
       {% if canRegister %}
       <a href="/admin/register" class="btn">注册</a>
