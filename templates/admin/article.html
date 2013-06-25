@@ -26,7 +26,7 @@
 			</td>
 			<td>
 			<a href="/admin/article/edit/{{entry.key()}}" class="btn btn-mini">编辑</a>&nbsp;
-			<a href="/admin/article/delete/{{entry.key()}}" class="btn btn-danger btn-mini">删除</a>
+			<a onclick="del('{{entry.key()}}')" class="btn btn-danger btn-mini">删除</a>
 			</td>
 		</tr>
 		{% end %}
@@ -35,5 +35,48 @@
 		<td colspan="4" style="text-align:center">无记录</td>
 	</tr>
 	{% end %}
+
+<div id="myModal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>删除确认</h3>
+  </div>
+  <div class="modal-body">
+    <p>确定要删除吗?此操作不可撤销.</p>
+  </div>
+  <div class="modal-footer">
+    <a href="#" onclick="$('#myModal').modal('hide')" class="btn">关闭</a>
+    <a href="#" onclick="$('#myModal').modal('hide');confirmDel();" class="btn btn-danger">删除</a>
+  </div>
+</div>
 </table>
+{% end %}
+
+{% block js %}
+<script>
+	var currentKey = null;
+	function del(key){
+		currentKey = key;
+		$('#myModal').modal('show');
+		
+	}
+	function confirmDel(){
+		if (!currentKey) {
+			return;
+		}
+		$.get('/admin/article/delete/' + currentKey, null, function(data){
+			if (data.success == 0) {
+				alert(data.error);
+			}else{
+				location.href='/dispatch?msg=' + encodeURIComponent('删除成功') + '&to=' + encodeURIComponent('文章列表') + '&toUrl=' + encodeURIComponent('/admin/article');
+			}
+		});
+	}
+
+	function getCookie(name) {
+	    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+	    return r ? r[1] : undefined;
+	}
+</script>
+
 {% end %}

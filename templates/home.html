@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 
 {% block body %}
+<div class="span10 offset1">
 {% for entry in entities %}
-<div class="post">
+    <div class="post">
     <div class="page-header">
-        <h3 class="title" title="发表于 {{ entry.published }}" data-placement="right">
+        <h3 class="title" style="margin-left:0" title="发表于 {{ entry.published.strftime("%Y-%m-%d %H:%M:%S") }}" data-placement="right">
             <a href="/post/{{ entry.key() }}">{{ entry.title }}</a></h3>
+            <blockquote>{{ entry.published.strftime("%Y-%m-%d %H:%M:%S") }}</blockquote>
+            <p>{{entry.slug}}</p>
     </div>
 </div>
 {% end %}
+</div>
 {% end %}

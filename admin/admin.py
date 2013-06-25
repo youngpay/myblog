@@ -41,7 +41,10 @@ class LoginHandler(AdminBaseHandler):
         password = self.get_argument("password", None)
         user = User.gql("WHERE email = :1 AND password = :2", email, password).get()
         if user:
-            self.set_secure_cookie("ypbauth", email, httponly=True)
+            user.lastLoginTime = datetime.datetime.now()
+            user.lastLoginIp = self.request.remote_ip
+            user.put()
+            self.set_secure_cookie(self.settings["auth_cookie_name"], email, httponly=True)
             self.redirect("/admin")
         else:
             self.view("admin/login.html", error=u"用户名或密码错误", email=email, canRegister=True)
@@ -60,7 +63,21 @@ class ProfileHandler(AdminBaseHandler):
         if user is None:
             self.send_error(404)
         else:
-            self.view("admin/profile.html", user=user,navIndex=1, menuIndex=4)
+            self.view("admin/profile.html", user=user,navIndex=1, menuIndex=2, error="")
+
+    def post(self):
+        email = self.get_current_user()
+        user = User.gql("WHERE email = :1", email).get()
+        nickname = self.get_argument("nickname", None)
+        if nickname:
+            try:
+                user.nickname = nickname
+                user.put()
+                self.dispatch(msg=u"保存成功", to=u"账户信息页", toUrl="/admin/profile", seconds=2)
+            except Exception as e:
+                self.view("admin/profile.html", user=user,navIndex=1, menuIndex=2, error=e)
+        else:
+            self.view("admin/profile.html", user=user,navIndex=1, menuIndex=2, error=u"昵称不能为空")
         
 class ArticleHandler(AdminBaseHandler):
     @authenticated
@@ -80,16 +97,19 @@ class ArticleNewHandler(AdminBaseHandler):
             self.view("admin/article-new.html", menuIndex=1, error=u"请输入标题")
             return
         
+        email = self.get_current_user()
+        user = User.gql("WHERE email = :1", email).get()
+
         source = self.get_argument("cleanSource", default=None)
         html = self.get_argument("content", default=None)
-        entry = Entry(author=self.get_current_user(), 
+        entry = Entry(author=user.key(),
             slug=source.replace("\r\n", " ").replace("\t", "  ")[0:200], 
             title=title, 
             html=html, 
             body_source=source)
         try:
             entry.put()
-            self.redirect("/admin/article")
+            self.dispatch(msg=u"创建成功", to=u"文章列表页", toUrl="/admin/article", seconds=2)
         except:
             self.view("admin/article-new.html", menuIndex=1, error=u"创建失败")
         
@@ -131,16 +151,6 @@ class ArticleDeleteHandler(AdminBaseHandler):
         except:
             self.json({"success":0, "error": "参数错误"})
     
-class TagHandler(AdminBaseHandler):
-    @authenticated
-    def get(self):
-        self.view("admin/tag.html", menuIndex=2)
-        
-class CatalogHandler(AdminBaseHandler):
-    @authenticated
-    def get(self):
-        self.view("admin/catalog.html", menuIndex=3)
-        
 routes = [
     (r"/admin[/]*", HomeHandler),
     (r"/admin/register", RegisterHandler),
@@ -148,8 +158,6 @@ routes = [
     (r"/admin/login", LoginHandler),
     (r"/admin/logout", LogoutHandler),
     (r"/admin/article", ArticleHandler),
-    (r"/admin/tag", TagHandler),
-    (r"/admin/catalog", CatalogHandler),
     (r"/admin/article/new", ArticleNewHandler),
     (r"/admin/article/edit/(.+)", ArticleEditHandler),
     (r"/admin/article/delete/(.+)", ArticleDeleteHandler),

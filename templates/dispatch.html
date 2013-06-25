@@ -18,22 +18,23 @@
 	var progresssum = 0;
 	var interval = seconds * 1000 / 100;
 	var pbar = null;
+	var oInterval = null;
 	
 	$(document).ready(function(){
 		pbar = $('#pbar');
-		setInterval(function(){
+		oInterval = setInterval(function(){
 			progress(step);
 		}, interval);
 	});
 	
 	// value:0-100
 	function progress(value){
-		progresssum = progresssum + value;
-		pbar.css("width", progresssum.toString() + "%");
-		console.log(progresssum);
 		if(progresssum >= 100){
+			window.clearInterval(oInterval);
 			location.href = toUrl;
 		}
+		progresssum = progresssum + value;
+		pbar.css("width", progresssum.toString() + "%");
 	}
 </script>
 {% end %}

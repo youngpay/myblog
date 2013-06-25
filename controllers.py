@@ -75,7 +75,10 @@ class ChangeThemeHandler(BaseHandler):
         
 class DispatchHandler(BaseHandler):
     def get(self):
-        self.dispatch()
+        msg = self.get_argument("msg", None)
+        to = self.get_argument("to", None)
+        toUrl = self.get_argument("toUrl", None)
+        self.dispatch(msg=msg, to=to, toUrl=toUrl)
 
 routes = [
     (r"/", HomeHandler),
