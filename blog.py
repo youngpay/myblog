@@ -9,6 +9,7 @@ import uimodules
 settings = {
     "debug": True,
     "blog_title": u"YoungPay's Blog",
+    "blog_page_size": 10,
     "template_path": os.path.join(os.path.dirname(__file__), "templates"),
     "xsrf_cookies": True,
     "ui_modules": uimodules,

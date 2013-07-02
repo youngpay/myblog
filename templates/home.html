@@ -12,5 +12,20 @@
     </div>
 </div>
 {% end %}
+{% if len(entities) > 0 %}
+<ul class="pager">
+    {% if page > 1 %}
+  <li class="previous">
+    <a href="/{{page - 1}}">&larr; 前一页</a>
+  </li>
+    {% end %}
+
+    {% if page < total %}
+  <li class="next">
+    <a href="/{{page + 1}}">后一页 &rarr;</a>
+  </li>
+    {% end %}
+</ul>
+{% end %}
 </div>
 {% end %}
