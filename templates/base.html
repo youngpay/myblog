@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ handler.settings['blog_title'] }}</title>
+    <title>{% block title %}{% end %}{{ handler.settings['blog_title'] }}</title>
     {% module ThemeCss(handler.get_cookie('ypbtheme', default="slate"))%}
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     {% block head %}{% end %}
