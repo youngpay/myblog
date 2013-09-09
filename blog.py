@@ -7,8 +7,9 @@ from admin import admin
 import uimodules
 
 settings = {
-    "debug": True,
+    "debug": False,
     "blog_title": u"YoungPay's Blog",
+    "blog_url": u"http://yangpei.appsp0t.com",
     "blog_page_size": 10,
     "template_path": os.path.join(os.path.dirname(__file__), "templates"),
     "xsrf_cookies": True,

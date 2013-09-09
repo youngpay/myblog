@@ -108,9 +108,34 @@ class DispatchHandler(BaseHandler):
         seconds = self.get_argument("seconds", None)
         self.dispatch(msg=msg, to=to, toUrl=toUrl, seconds=seconds)
 
+class RssHandler(BaseHandler):
+    def get(self):
+        from feedformatter import Feed
+        import time
+        feed = Feed()
+
+        feed.feed["title"] = self.settings["blog_title"]
+        feed.feed["link"] = self.settings["blog_url"]
+        feed.feed["author"] = "yangpei@gmail.com"
+        feed.feed["description"] = u"C#, Objective-C, Python;"
+
+        entities = db.Query(Entry).order("-published").fetch(limit=100)
+        for x in entities:
+            item = {}
+            item["title"] = x.title
+            item["link"] = self.settings["blog_url"] + "/post/" + str(x.key())
+            item["description"] = x.slug
+            item["pubDate"] = x.published
+            item["guid"] = str(x.key())
+            feed.items.append(item)
+
+        self.set_header("Content-Type", "text/xml")
+        self.write(feed.format_rss2_string())
+
 routes = [
     (r"/(\d*)", HomeHandler),
     (r"/post/(.+)", PostHandler),
     (r"/changetheme/(.+)", ChangeThemeHandler),
     (r"/dispatch", DispatchHandler),
+    (r"/rss", RssHandler),
 ]

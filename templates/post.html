@@ -1,4 +1,10 @@
 {% extends "base.html" %}
+{% block title %}{{post.title}} -
+{% end %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/css/prettify.css" type="text/css">
+{% end %}
 
 {% block body %}
 <div class="span10 offset1">
@@ -8,7 +14,17 @@
     <hr />
     {% raw post.html %}
     <hr />
+    {% if not handler.settings["debug"] %}
     {% include "disqus.html" %}
+    {% end %}
     <a href="/" class="btn">返回</a>
 </div>
+{% end %}
+
+{% block js %} 
+<script type="text/javascript" src="/static/js/prettify/prettify.js"></script><!--
+<script type="text/javascript" src="/static/js/prettify/run_prettify.js"></script> -->
+<script>
+    prettyPrint();
+</script>
 {% end %}

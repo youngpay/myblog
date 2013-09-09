@@ -433,3 +433,35 @@ pre {
   border: none;
   color: #c6c6c6;
 }
+
+.prettyprint .kwd{
+  color: rgb(86, 156,214);
+}
+.prettyprint .pln{
+  color: rgb(220,220,220);
+}
+.prettyprint .typ{
+  color: rgb(78, 201,176);
+}
+.prettyprint .pun{
+  color: rgb(180,180,180);
+}
+.prettyprint .str{
+  color: rgb(214,157,133);
+}
+.prettyprint .lit{
+  color: rgb(181,206,168);
+}
+.prettyprint .tag{
+  color: rgb(86, 156,214);
+}
+.prettyprint .atn{
+  color: rgb(156, 220,254);
+}
+.prettyprint .atv{
+  color: rgb(200, 200,200);
+}
+.prettyprint .com{
+  color: rgb(96, 139,78);
+}
+
